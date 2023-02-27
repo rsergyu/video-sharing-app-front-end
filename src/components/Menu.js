@@ -84,10 +84,12 @@ const Menu = () => {
           </Logo>
         </Link>
         <Section>
+        <Link to="/" style={{textDecoration:"none", color:"inherit"}}>
           <Item>
             <HomeIcon />
             Home
           </Item>
+        </Link>
           <Item>
             <SubscriptionsIcon/>
             Subscription
