@@ -1,7 +1,8 @@
-import React from 'react'
+import axios from 'axios';
+import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom';
 import styled from 'styled-components'
-import ChannelPhotoImg from '../img/ChannelPhoto.png'
+import {format} from 'timeago.js'
 
 const Container = styled.div`
 width: 292px;
@@ -75,20 +76,32 @@ color: #606060;
 
 
 
-const Card = () => {
+const Card = ({type, video}) => {
+
+  const [channel, setChannel] = useState({})
+
+  useEffect(() => {
+    const fetchChannel = async ()=>{
+      const res = await axios.get(`/users/find/${video.userId}`);
+      setChannel(res.data);
+    }
+    fetchChannel();
+    
+  }, [video.userId])
+
   return (
     <Link to="/video/123" style={{textDecoration: "none", color:"inherit"}}>
       <Container>
         <Video>
-            <VideoImg src="https://i.ytimg.com/vi/8I3NTE4cn5s/hq720.jpg?sqp=-oaymwEcCNAFEJQDSFXyq4qpAw4IARUAAIhCGAFwAcABBg==&rs=AOn4CLDobmOkf5Plpv-2sThX0SlbWETZJg"/>    
+            <VideoImg src={video.imgUrl}/>    
             <VideoLength>8:43</VideoLength>
         </Video>
         <WrapperDetails>
-                <ChannelPhoto src={ChannelPhotoImg}/>
+                <ChannelPhoto src={channel.img}/>
             <Details>        
-                <Title>This is the first ever hardcoded video title, that need to be very long for CSS reason.</Title>
-                <ChannelName>FirstChannel Video</ChannelName>
-                <Info>2.3M views • 1 month ago</Info>        
+                <Title>{video.title}</Title>
+                <ChannelName>{channel.name}</ChannelName>
+                <Info>{video.views} views • {format(video.createdAt)}</Info>        
             </Details>
         </WrapperDetails>        
       </Container>

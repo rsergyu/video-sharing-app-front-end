@@ -7,6 +7,7 @@ import SubscriptionsIcon from '@mui/icons-material/Subscriptions';
 import VideoLibraryIcon from '@mui/icons-material/VideoLibrary';
 import HistoryIcon from '@mui/icons-material/History';
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
+import WhatshotIcon from '@mui/icons-material/Whatshot';
 
 const Container = styled.div`
 flex:1;
@@ -90,10 +91,18 @@ const Menu = () => {
             Home
           </Item>
         </Link>
+        <Link to="/trends" style={{textDecoration:"none", color:"inherit"}}>
+          <Item>
+            <WhatshotIcon/>
+            Trending
+          </Item>
+        </Link>
+        <Link to="/subscriptions" style={{textDecoration:"none", color:"inherit"}}>
           <Item>
             <SubscriptionsIcon/>
             Subscription
           </Item>
+        </Link>
         </Section>
         <Section>
           <Item>
@@ -110,9 +119,11 @@ const Menu = () => {
           Sign in to like videos, comment, and subscribe.
 
           </Login>
+        <Link to="/signin" style={{textDecoration:"none", color:"inherit"}}>
           <BtnLogin>
             <AccountCircleOutlinedIcon/>
             Sign in</BtnLogin>
+        </Link>
         </Section>
         
       

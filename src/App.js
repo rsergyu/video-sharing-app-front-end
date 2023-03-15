@@ -5,6 +5,7 @@ import Navbar from './components/Navbar';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import Video from './pages/Video';
+import Signin from './pages/SignIn';
 
 const Container = styled.div`
 display: flex;
@@ -29,7 +30,10 @@ function App() {
             <Wrapper>
               <Routes>
                 <Route path='/' >
-                <Route index element={<Home  />} />
+                <Route index element={<Home type="random" />} />
+                <Route path='trends' element={<Home type="trend" />} />
+                <Route path='subscriptions' element={<Home type="sub" />} />
+                <Route path='signin' element={<Signin/>} />
                 <Route path='video/:id' element={<Video />} />
                   {/* <Route path=':id' element={<Video  />} /> */}
                 </Route>
