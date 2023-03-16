@@ -1,9 +1,7 @@
-import React, { useState } from 'react';
-import { useDispatch } from "react-redux";
+import React, { useState } from 'react'
 import styled from 'styled-components'
 import {Link} from 'react-router-dom'
 import axios from 'axios';
-import {loginStart, loginSuccess, loginFailure } from '../redux/userSlice'
 
 
 
@@ -58,17 +56,15 @@ const LinkDiv = styled.span`
 const Signin = () => {
 
   const [name,setName] = useState();
+  const [email,setEmail] = useState();
   const [password,setPassword] = useState();
-  const dispatch = useDispatch();
 
-  const handleLogin = async (e) => {
+  const handleSignUp = async (e) => {
     e.preventDefault();
-    dispatch(loginStart());
     try {
-      const res = await axios.post("/auth/signin", {name,password})
-      dispatch(loginSuccess(res.data));
+      const res = await axios.post("/auth/signup", {name,email,password})
+      console.log(res.data)
     } catch (err) {
-      dispatch(loginFailure());
       
     }
   }
@@ -78,14 +74,12 @@ const Signin = () => {
       <Wrapper>
         <Title>Sign In</Title>
         <SubTitle>to continue to OpenTube</SubTitle>
-        <Input placeholder='email/username' onChange={e=>setName(e.target.value)}/>
-        <Input type='password' placeholder='password' onChange={e=>setPassword(e.target.value)}/>
-        <Button onClick={handleLogin}>Sign In</Button>
-        <LinkDiv>Forgot password?</LinkDiv>
-        <Title>or</Title>
-        <Button>Signin with Google</Button>
-        <Link to="/signup" style={{textDecoration:"none", color:"inherit"}}>
-        <LinkDiv>Create account</LinkDiv>
+        <Input placeholder='username' onChange={e=>setName(e.target.value)}/>
+        <Input type='email' placeholder='email'onChange={e=>setEmail(e.target.value)}/>
+        <Input type='password' placeholder='password'onChange={e=>setPassword(e.target.value)}/>
+        <Button onClick={handleSignUp}>Create account</Button>        
+        <Link to="/signin" style={{textDecoration:"none", color:"inherit"}}>
+        <LinkDiv>Sign In</LinkDiv>
         </Link>
       </Wrapper>
     </Container>

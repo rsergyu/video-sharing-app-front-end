@@ -8,6 +8,7 @@ import VideoLibraryIcon from '@mui/icons-material/VideoLibrary';
 import HistoryIcon from '@mui/icons-material/History';
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
 import WhatshotIcon from '@mui/icons-material/Whatshot';
+import { useSelector } from 'react-redux';
 
 const Container = styled.div`
 flex:1;
@@ -76,6 +77,10 @@ cursor: pointer;
 
 
 const Menu = () => {
+
+  const {currentUser} = useSelector(state=>state.user)
+
+
   return (
     <Container>
       <Wrapper>
@@ -114,6 +119,9 @@ const Menu = () => {
             History
           </Item>
         </Section>
+        {currentUser ? 
+        ""
+        :        
         <Section>
           <Login>
           Sign in to like videos, comment, and subscribe.
@@ -124,7 +132,7 @@ const Menu = () => {
             <AccountCircleOutlinedIcon/>
             Sign in</BtnLogin>
         </Link>
-        </Section>
+        </Section>}
         
       
       </Wrapper>
