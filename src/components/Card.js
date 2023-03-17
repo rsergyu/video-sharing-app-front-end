@@ -17,8 +17,8 @@ position: relative;
 `;
 
 const VideoImg = styled.img`
-/* width: 100%; */
-background-color: #999;
+width: 100%;
+background-color: #909090;
 height: 164px;     
 border-radius:20px;
 `;
@@ -41,6 +41,7 @@ width:36px;
 height:36px;
 border-radius:50%;
 margin-right: 12px;
+background-color: #909090;
 `;
 
 const WrapperDetails = styled.div`

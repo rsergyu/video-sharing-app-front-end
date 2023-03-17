@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { useDispatch } from "react-redux";
 import styled from 'styled-components'
-import {Link} from 'react-router-dom'
+import {Link, useNavigate} from 'react-router-dom'
 import axios from 'axios';
 import {loginStart, loginSuccess, loginFailure } from '../redux/userSlice'
+import { auth, provider } from '../firebase';
+import { signInWithPopup } from 'firebase/auth';
 
 
 
@@ -60,6 +62,7 @@ const Signin = () => {
   const [name,setName] = useState();
   const [password,setPassword] = useState();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -67,10 +70,21 @@ const Signin = () => {
     try {
       const res = await axios.post("/auth/signin", {name,password})
       dispatch(loginSuccess(res.data));
+      navigate("/");
     } catch (err) {
       dispatch(loginFailure());
       
     }
+
+   
+
+  }
+  const signInWithGoogle = () => {
+    signInWithPopup(auth,provider).then((result) => {
+      console.log(result)
+    }).catch((error)=>{
+      console.log(error)
+    })
   }
 
   return (
@@ -83,7 +97,7 @@ const Signin = () => {
         <Button onClick={handleLogin}>Sign In</Button>
         <LinkDiv>Forgot password?</LinkDiv>
         <Title>or</Title>
-        <Button>Signin with Google</Button>
+        <Button onClick={ signInWithGoogle} >Signin with Google</Button>
         <Link to="/signup" style={{textDecoration:"none", color:"inherit"}}>
         <LinkDiv>Create account</LinkDiv>
         </Link>

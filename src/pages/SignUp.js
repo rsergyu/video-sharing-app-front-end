@@ -1,7 +1,9 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
-import {Link} from 'react-router-dom'
+import {Link, useNavigate} from 'react-router-dom'
 import axios from 'axios';
+import { useDispatch } from 'react-redux';
+import { loginFailure, loginStart, loginSuccess } from '../redux/userSlice';
 
 
 
@@ -58,13 +60,19 @@ const Signin = () => {
   const [name,setName] = useState();
   const [email,setEmail] = useState();
   const [password,setPassword] = useState();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleSignUp = async (e) => {
     e.preventDefault();
+    dispatch(loginStart());
     try {
       const res = await axios.post("/auth/signup", {name,email,password})
       console.log(res.data)
+      dispatch(loginSuccess());
+      navigate("/");
     } catch (err) {
+      dispatch(loginFailure());
       
     }
   }
