@@ -15,11 +15,11 @@ gap: 10px;
 const Home = ({type}) => {
 
   const [videos, setVideos] = useState([]);
-  axios.defaults.baseURL = 'http://video-share-app.onrender.com/api/';
+  
 
   useEffect(() => {
     const fetchVideos = async ()=>{
-      const res = await axios.get(`/videos/${type}`);
+      const res = await axios.get(`http://video-share-app.onrender.com/api/videos/${type}`);
       setVideos(res.data);
       console.log(res.data)
     }

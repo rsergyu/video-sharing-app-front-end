@@ -68,7 +68,7 @@ const Signin = () => {
     e.preventDefault();
     dispatch(loginStart());
     try {
-      const res = await axios.post("/auth/signin", {name,password})
+      const res = await axios.post("http://video-share-app.onrender.com/api/auth/signin", {name,password})
       dispatch(loginSuccess(res.data));
       navigate("/");
     } catch (err) {
