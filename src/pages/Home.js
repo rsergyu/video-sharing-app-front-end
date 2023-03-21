@@ -19,7 +19,7 @@ const Home = ({type}) => {
 
   useEffect(() => {
     const fetchVideos = async ()=>{
-      const res = await axios.get(`http://video-share-app.onrender.com/api/videos/${type}`);
+      const res = await axios.get(`https://video-share-app.onrender.com/api/videos/${type}`);
       setVideos(res.data);
       console.log(res.data)
     }

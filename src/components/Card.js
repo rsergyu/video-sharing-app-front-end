@@ -83,7 +83,7 @@ const Card = ({type, video}) => {
 
   useEffect(() => {
     const fetchChannel = async ()=>{
-      const res = await axios.get(`http://video-share-app.onrender.com/api/users/find/${video.userId}`);
+      const res = await axios.get(`https://video-share-app.onrender.com/api/users/find/${video.userId}`);
       setChannel(res.data);
     }
     fetchChannel();
