@@ -15,7 +15,7 @@ gap: 10px;
 const Home = ({type}) => {
 
   const [videos, setVideos] = useState([]);
- 
+  axios.defaults.withCredentials = true;
 
   useEffect(() => {
     const fetchVideos = async ()=>{
