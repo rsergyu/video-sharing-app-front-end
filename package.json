@@ -45,6 +45,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "proxy": "https://video-share-app.onrender.com/api/"
+  }
 }
