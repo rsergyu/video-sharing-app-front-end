@@ -84,7 +84,7 @@ const Signin = () => {
 
     signInWithPopup(auth,provider)
       .then((result) => {
-         axios.post("/auth/auth",{
+         axios.post("https://video-share-app.onrender.com/api/auth/auth",{
           name: result.user.displayName,
           email: result.user.email,
           img: result.user.photoURL,
