@@ -36,7 +36,7 @@ function App() {
                 <Route path='subscriptions' element={<Home type="sub" />} />
                 <Route path='signin' element={<Signin/>} />
                 <Route path='signup' element={<Signup/>} />
-                <Route path='videos/:id' element={<Video />} />
+                <Route path='videos/:id' element={<Video type="random" />} />
                   {/* <Route path=':id' element={<Video  />} /> */}
                 </Route>
               </Routes>

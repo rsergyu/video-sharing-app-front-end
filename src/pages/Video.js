@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import Card from '../components/Card';
 import ChannelPhotoImg from '../img/ChannelPhoto.png'
@@ -6,6 +6,7 @@ import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined';
 import ThumbDownOutlinedIcon from '@mui/icons-material/ThumbDownOutlined';
 import ReplyAllIcon from '@mui/icons-material/ReplyAll';
 import Comments from '../components/Comments';
+import axios from 'axios';
 
 const Container = styled.div`
 display:flex;
@@ -193,7 +194,7 @@ font-size:16px;
 outline: none;
 cursor: pointer;
 background-color: transparent;
-width:100%
+width:100%;
 `;
 
 
@@ -201,7 +202,22 @@ const Recommended = styled.div`
 flex: 2;
 `;
 
-const Video = () => {
+const Video = ({type}) => {
+
+  const [videos, setVideos] = useState([]);
+  axios.defaults.withCredentials = true;
+
+  useEffect(() => {
+    const fetchVideos = async ()=>{
+      const res = await axios.get(`https://video-share-app.onrender.com/api/videos/${type}`, {withCredentials: true});
+      setVideos(res.data);
+      console.log(res.data)
+    }
+    fetchVideos();
+    
+  }, [type])
+
+
   return (
     <Container>
       <Content>
@@ -212,9 +228,9 @@ const Video = () => {
           height="482"
           src="https://www.youtube.com/embed/8I3NTE4cn5s" 
           title="YouTube video player" 
-          frameborder="0" 
+          frameBorder="0" 
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-          allowfullscreen>
+          allowFullScreen >
         </iframe>
         </WrapperVideo>
         <Title>This is the first ever hardcoded video title, that need to be very long for CSS reason.</Title>
@@ -269,12 +285,9 @@ https://uxenhance.editorx.io/join
       </Content>
       <Recommended>
         Recommended
-        <Card/>
-        <Card/>
-        <Card/>
-        <Card/>
-        <Card/>
-        <Card/>
+        {videos.map(video => ( 
+        <Card key={video._id} video={video}/>
+      ))}
       </Recommended>
     </Container>
   )

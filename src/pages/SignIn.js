@@ -75,15 +75,27 @@ const Signin = () => {
       dispatch(loginFailure());
       
     }
-
-   
-
+    
+    
+    
   }
-  const signInWithGoogle = () => {
-    signInWithPopup(auth,provider).then((result) => {
-      console.log(result)
+  const signInWithGoogle = async () => {
+    dispatch(loginStart());
+
+    signInWithPopup(auth,provider)
+      .then((result) => {
+         axios.post("/auth/auth",{
+          name: result.user.displayName,
+          email: result.user.email,
+          img: result.user.photoURL,
+          password: result.user.uid,
+        }).then((res) => {
+          dispatch(loginSuccess(res.data));
+          console.log(res.data);
+        })     
     }).catch((error)=>{
       console.log(error)
+      dispatch(loginFailure());
     })
   }
 
