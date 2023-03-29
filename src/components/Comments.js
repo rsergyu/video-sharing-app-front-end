@@ -1,5 +1,7 @@
-import React from 'react'
+import axios from 'axios';
+import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
+import { format } from 'timeago.js'
 
 const Container = styled.div`
 margin-top:25px;
@@ -41,17 +43,27 @@ margin-top: 10px;
 
 
 
-const Comments = () => {
+const Comments = ({comment}) => {
+
+
+  const [user, setUser] = useState({})
+
+  useEffect(() => {
+    const fetchUser = async ()=>{
+      const res = await axios.get(`https://video-share-app.onrender.com/api/users/find/${comment.userId}` , );
+      setUser(res.data);
+    }
+    fetchUser();
+    
+  }, [comment.userId])
+
   return (
     <Container>
-        <ProfilePhoto/>
-        <Wrapper>
-
-        <ProfileName>First User</ProfileName><CommentTime> 1 month</CommentTime>
-
-        <Comment>Honestly as a graphic designer this gets me so excited because it means that I will be able to prototype for clients much quicker and will be able to give them tangible prototypes and mockups without spending hours and hours on something only for them to switch up and change ideas last minute. AI isn't going to ever be a replacement. Its going to be a tool just like everything else we already use as </Comment>
-        </Wrapper>
-
+        <ProfilePhoto src={user.img}/>
+          <Wrapper>
+            <ProfileName>{user.name}</ProfileName><CommentTime> {format(comment.createdAt)}</CommentTime>
+            <Comment>{comment.comment}</Comment>
+          </Wrapper>
     </Container>
   )
 }

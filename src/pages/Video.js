@@ -1,24 +1,30 @@
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import Card from '../components/Card';
-import ChannelPhotoImg from '../img/ChannelPhoto.png'
+import CheckIcon from '@mui/icons-material/Check';
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined';
+import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import ThumbDownOutlinedIcon from '@mui/icons-material/ThumbDownOutlined';
 import ReplyAllIcon from '@mui/icons-material/ReplyAll';
 import Comments from '../components/Comments';
 import axios from 'axios';
+import { useDispatch, useSelector } from 'react-redux';
+import { useLocation } from 'react-router-dom';
+import { format } from 'timeago.js'
+import { fetchFailure, fetchStart, fetchSuccess, like, dislike } from '../redux/videoSlice';
+import { subscribe, unsubscribe } from '../redux/userSlice';
+
 
 const Container = styled.div`
 display:flex;
 `;
-
 const Content = styled.div`
 flex: 5;
 `;
 const WrapperVideo = styled.div`
 margin-bottom: 10px;
 `;
-
 const Title = styled.h1`
 font-size:20px;
 font-weight:600;
@@ -28,12 +34,12 @@ display: -webkit-box;
 -webkit-line-clamp: 2;
 -webkit-box-orient: vertical;
 `;
-
 const ChannelPhoto = styled.img`
 width:40px;
 height:40px;
 border-radius:50%;
 margin-right: 12px;
+background-color: #909090;
 `;
 const InteractionZone = styled.div`
 display: flex;
@@ -74,6 +80,20 @@ font-size:1rem;
 cursor: pointer;
 
 `;
+const UnsubscribeBtn = styled.button`
+height:36px;
+background-color: #f8f8f8;
+padding-inline: 15px;
+display:flex;
+align-items: center;
+border-radius: 20px;
+border: none;
+font-weight: 500px;
+font-size:1rem;
+gap: 5px;
+margin-left:8px;
+cursor: pointer;
+`;
 const LikeDislikeBtns = styled.div`
 display: flex;
 flex:2;
@@ -94,7 +114,7 @@ gap: 10px;
 cursor: pointer;
 border-right: 2px solid #c8c8c8;
 `;
-const Unlike = styled.button`
+const Dislike = styled.button`
 height:36px;
 background-color: #f8f8f8;
 padding-inline: 15px;
@@ -141,13 +161,11 @@ font-weight: 500;
 font-size: 14px;
 color: #0F0F0F;
 `;
-
 const Tags = styled.span`
 font-weight: 400;
 font-size: 14px;
 color: #606060;
 `;
-
 const VideoDescription = styled.div`
 font-weight: 400;
 font-size: 14px;
@@ -160,13 +178,10 @@ display: -webkit-box;
 -webkit-box-orient: vertical;
 
 `;
-
-
 const CommentZone = styled.div`
 margin-top: 20px;
 `;
 const CommentsNo = styled.div`
-
 `;
 const AddCommentSection = styled.div`
 display: felx;
@@ -175,7 +190,6 @@ margin-top: 25px;
 margin-bottom: 45px;
 width:95%;
 `;
-
 const UserProfilePicture = styled.img`
 background-color: #909090;
 border-radius: 50%;
@@ -196,26 +210,78 @@ cursor: pointer;
 background-color: transparent;
 width:100%;
 `;
-
-
 const Recommended = styled.div`
 flex: 2;
 `;
 
+
 const Video = ({type}) => {
 
-  const [videos, setVideos] = useState([]);
-  axios.defaults.withCredentials = true;
+  const { currentUser } = useSelector((state) => state.user);
+  const { currentVideo } = useSelector((state) => state.video);
+  const dispatch = useDispatch();
+  const path = useLocation().pathname.split("/")[2];
+  console.log(path);
+
+  const [channel, setChannel] = useState({});
+  const [comments, setComments] = useState([])
+  console.log(channel.subscribers) 
 
   useEffect(() => {
-    const fetchVideos = async ()=>{
-      const res = await axios.get(`https://video-share-app.onrender.com/api/videos/${type}`, {withCredentials: true});
-      setVideos(res.data);
-      console.log(res.data)
+    const fetchData = async () => {
+      // dispatch(fetchStart());        
+
+      try {
+
+        const videoRes = await axios.get(`https://video-share-app.onrender.com/api/videos/find/${path}`);
+        const channelRes = await axios.get(`https://video-share-app.onrender.com/api/users/find/${videoRes.data.userId}`);
+        const commentsRes = await axios.get(`https://video-share-app.onrender.com/api/comments/${path}`)
+        setChannel(channelRes.data);
+        setComments(commentsRes.data);
+        dispatch(fetchSuccess(videoRes.data));
+
+      } catch (err) {
+      }      
     }
-    fetchVideos();
-    
-  }, [type])
+    fetchData();    
+  }, [ path,dispatch])
+
+  const handleLike = async () => {
+    try {
+      await axios.put(`https://video-share-app.onrender.com/api/users/like/${path}`, {withCredentials: true})
+      dispatch(like(currentUser._id))
+    } catch (err) {
+      
+    }
+  }
+  const handleDislike = async () => {
+    try {      
+      await axios.put(`https://video-share-app.onrender.com/api/users/dislike/${path}`, {withCredentials: true})
+      dispatch(dislike(currentUser._id))
+    } catch (err) {
+      
+    }
+  }
+  const handleSub = async () => {
+    try {      
+      await axios.put(`https://video-share-app.onrender.com/api/users/sub/${channel._id}`, {withCredentials: true})
+      dispatch(subscribe(channel._id))
+    } catch (err) {
+      
+    }
+  }
+  const handleUnsub = async () => {
+    try {      
+      await axios.put(`https://video-share-app.onrender.com/api/users/unsub/${channel._id}`, {withCredentials: true})
+      dispatch(unsubscribe(channel._id))
+    } catch (err) {
+      
+    }
+  }
+
+
+
+
 
 
   return (
@@ -233,61 +299,63 @@ const Video = ({type}) => {
           allowFullScreen >
         </iframe>
         </WrapperVideo>
-        <Title>This is the first ever hardcoded video title, that need to be very long for CSS reason.</Title>
+        <Title>{currentVideo.title}</Title>
         <InteractionZone>
-          <ChannelPhoto src={ChannelPhotoImg}/>
+          <ChannelPhoto src={channel.img}/>
           <WrapperInfo>
-          <ChannelName>FirstChannel Video</ChannelName>
-          <SubscribersNo>186K subscribers</SubscribersNo>
+          <ChannelName>{channel.name}</ChannelName>
+          <SubscribersNo>{channel.subscribers?.length}</SubscribersNo>
           </WrapperInfo>
-          <Subscribe><SubscribeBtn>Subscribe</SubscribeBtn></Subscribe>
-          <LikeDislikeBtns><Like><ThumbUpOutlinedIcon/>71.2k</Like><Unlike><ThumbDownOutlinedIcon/></Unlike></LikeDislikeBtns>
+          <Subscribe>
+            {currentUser.subscribedUsers?.includes(currentVideo.userId) 
+            ?
+            <UnsubscribeBtn onClick={handleUnsub}>Subscribed<CheckIcon /></UnsubscribeBtn>
+            :
+            <SubscribeBtn onClick={handleSub}>Subscribe</SubscribeBtn>
+            }
+          </Subscribe>
+          <LikeDislikeBtns>
+            { currentVideo.likes?.includes(currentUser._id) 
+            ? 
+              <Like ><ThumbUpIcon/>{currentVideo.likes?.length} likes</Like>
+            :
+              <Like onClick={handleLike}><ThumbUpOutlinedIcon/>{currentVideo.likes?.length} likes</Like>
+            }
+            { currentVideo.dislikes?.includes(currentUser._id) 
+            ?
+              <Dislike ><ThumbDownIcon/></Dislike>
+            :
+              <Dislike onClick={handleDislike}><ThumbDownOutlinedIcon/></Dislike>
+            }
+          </LikeDislikeBtns>
           <Share><ShareBtn><ReplyAllIcon/>Share</ShareBtn></Share>
         </InteractionZone>
         <DescritionZone>
-        <Info>2,3M views  27 Dec 2022  </Info><Tags>#ai #chatgpt #midjourney</Tags>
+        <Info>{currentVideo.views} views {format(currentVideo.createdAt)}   </Info><Tags>{currentVideo.tags}</Tags>
           <VideoDescription>
-          
-Learn how to use AI Art and ChatGPT to Create a Website without writing a single line of code!
-
-⭐ Check out my Design UI / UX Course called Enhance UI ⭐
-https://uxenhance.editorx.io/enhance-ui
-
-In this video, I'm going to generate website designs with midjourney, which is an AI art tool for creating images. Then we will jump into chat gpt to create the written content for the website, and finally put it all together in Editor X, which is a no coding tool for creating sites! Nocode and artificial intelligence assisted art will definitely be the future!
-
-MidJourney:
-https://www.midjourney.com/
-
-ChatGPT:
-https://chat.openai.com/
-
-Editor X:
-https://www.editorx.com/editor-x/codex
-
-Want to learn more, say hi, and interact with the Codex Community? You can also find our Community Discord below: This channel also has Editor X's backing!
-https://uxenhance.editorx.io/join
-
-#ai #chatgpt #midjourney
+          {currentVideo.desc}
           </VideoDescription>
         </DescritionZone>
         <CommentZone>
-          <CommentsNo>2,057 Comments</CommentsNo>
-          <AddCommentSection>
-            <UserProfilePicture />
-            <AddComment><AddCommentInput placeholder='Add a comment...'/></AddComment>
-          </AddCommentSection>
-        <Comments />
-        <Comments />
-        <Comments />
-        <Comments />
+          <CommentsNo>{comments.length} Comments</CommentsNo>
+            <AddCommentSection>
+              {currentUser 
+              ?  
+                <UserProfilePicture src={currentUser.img}/> 
+              :
+                <UserProfilePicture /> 
+              }
+              <AddComment><AddCommentInput placeholder='Add a comment...'/></AddComment>
+            </AddCommentSection>
+         {comments.map(comment => (
+          <Comments key={comment._id} comment={comment} />
+         ))}
         </CommentZone>
         
       </Content>
       <Recommended>
         Recommended
-        {videos.map(video => ( 
-        <Card key={video._id} video={video}/>
-      ))}
+        
       </Recommended>
     </Container>
   )
