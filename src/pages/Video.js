@@ -213,6 +213,11 @@ width:100%;
 const Recommended = styled.div`
 flex: 2;
 `;
+const VideoFrame = styled.video`
+  max-height: 720px;
+  width: 100%;
+  object-fit: cover;
+`;
 
 
 const Video = ({type}) => {
@@ -288,23 +293,14 @@ const Video = ({type}) => {
     <Container>
       <Content>
         <WrapperVideo>
-
-        <iframe 
-          width="857"  
-          height="482"
-          src="https://www.youtube.com/embed/8I3NTE4cn5s" 
-          title="YouTube video player" 
-          frameBorder="0" 
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-          allowFullScreen >
-        </iframe>
+          <VideoFrame src={currentVideo.videoUrl} controls/>
         </WrapperVideo>
         <Title>{currentVideo.title}</Title>
         <InteractionZone>
           <ChannelPhoto src={channel.img}/>
           <WrapperInfo>
           <ChannelName>{channel.name}</ChannelName>
-          <SubscribersNo>{channel.subscribers?.length}</SubscribersNo>
+          <SubscribersNo>{channel.subscribers?.length}{channel.subscribers?.length === 1 ? " Subscriber": " Subscribers"}</SubscribersNo>
           </WrapperInfo>
           <Subscribe>
             {currentUser.subscribedUsers?.includes(currentVideo.userId) 
@@ -317,9 +313,9 @@ const Video = ({type}) => {
           <LikeDislikeBtns>
             { currentVideo.likes?.includes(currentUser._id) 
             ? 
-              <Like ><ThumbUpIcon/>{currentVideo.likes?.length} likes</Like>
+              <Like ><ThumbUpIcon/>{currentVideo.likes?.length} {currentVideo.likes?.length > 1 ? "likes" : "like" } </Like>
             :
-              <Like onClick={handleLike}><ThumbUpOutlinedIcon/>{currentVideo.likes?.length} likes</Like>
+              <Like onClick={handleLike}><ThumbUpOutlinedIcon/>{currentVideo.likes?.length} {currentVideo.likes?.length > 1 ? "likes" : "like" }</Like>
             }
             { currentVideo.dislikes?.includes(currentUser._id) 
             ?
@@ -331,13 +327,13 @@ const Video = ({type}) => {
           <Share><ShareBtn><ReplyAllIcon/>Share</ShareBtn></Share>
         </InteractionZone>
         <DescritionZone>
-        <Info>{currentVideo.views} views {format(currentVideo.createdAt)}   </Info><Tags>{currentVideo.tags}</Tags>
+        <Info>{currentVideo.views} views {format(currentVideo.createdAt)}        </Info><Tags>{currentVideo.tags}</Tags>
           <VideoDescription>
           {currentVideo.desc}
           </VideoDescription>
         </DescritionZone>
         <CommentZone>
-          <CommentsNo>{comments.length} Comments</CommentsNo>
+          <CommentsNo>{comments.length} {comments.length === 1 ? "Comment" : "Comments" }</CommentsNo>
             <AddCommentSection>
               {currentUser 
               ?  

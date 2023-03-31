@@ -1,10 +1,11 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
 import VideoCallOutlinedIcon from '@mui/icons-material/VideoCallOutlined';
 import { Link } from 'react-router-dom'
 import { useSelector } from 'react-redux';
+import Upload from './Upload';
 
 
 const Container = styled.div`
@@ -45,7 +46,7 @@ padding-left: 15px;
 font-size:16px;
 outline: none;
 cursor: pointer;
-width:100%
+width:100%;
 `;
 
 
@@ -80,10 +81,12 @@ background-color:#999;
 `;
 
 const Navbar = () => {
-
-  const {currentUser} = useSelector(state=>state.user)
+  const [open, setOpen] = useState(false);
+  const { currentUser } = useSelector((state) => state.user);
 
   return (
+
+    <>
     <Container>
       <Search>
       <Input placeholder='Search'></Input>
@@ -92,10 +95,9 @@ const Navbar = () => {
       {currentUser 
         ? 
         (<User>
-          <VideoCallOutlinedIcon/>
+          <VideoCallOutlinedIcon onClick={()=>setOpen(true)} />
           <Avatar src={currentUser.img}/>
-          {currentUser.name}
-        
+          {currentUser.name}        
         </User>) 
         : 
         <Link to="/signin" style={{textDecoration:"none", color:"inherit"}}>
@@ -106,6 +108,8 @@ const Navbar = () => {
       </Link>}
 
     </Container>
+    {open && <Upload setOpen={setOpen}/> }
+    </>
   )
 }
 
