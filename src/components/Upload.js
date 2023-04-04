@@ -140,14 +140,21 @@ const Upload = ({setOpen}) => {
             <Title>
                 Upload a new video
             </Title>
-            {!videoFile &&(
+            {!videoFile ? (
             <DragAndDropZone onDragOver={handleDragOver} onDrop={handleDrop}>
-                <DropTitle>Drag and drop video or</DropTitle>
+                <DropTitle>Drag and drop video</DropTitle>
                 <DropInput type="file" accept='video/*' onChange={(e) => setVideoFile(e.target.files[0])} hidden ref={inputRef}></DropInput>
                 <DropTitle>or</DropTitle>
                 <SelectFileBtn onClick={() => inputRef.current.click()}>Select file</SelectFileBtn>
             </DragAndDropZone>
-            )}
+            ):
+            <DragAndDropZone>
+                <DropTitle></DropTitle>
+                <DropInput name='title' type='text' placeholder='Title' onChange={handleChange}></DropInput>
+                <DropInput name='desc' rows={8} placeholder='Description' onChange={handleChange}></DropInput>
+                <DropInput name='tags' type='text' placeholder='Separate the tags with commas' onChange={handleChange}></DropInput>
+            </DragAndDropZone>
+            }
         </Wrapper>
     </Container>
   )
