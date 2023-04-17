@@ -1,7 +1,10 @@
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import styled from 'styled-components';
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import app from '../firebase';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import { async } from '@firebase/util';
 
 const Container = styled.div`
 width: 100svw;
@@ -51,6 +54,8 @@ text-align:center;
 `;
 const DropInput = styled.input`
 `;
+const Label = styled.label`
+`;
 const SelectFileBtn = styled.button`
 display: flex;
 align-items: center;
@@ -72,7 +77,7 @@ const Upload = ({setOpen}) => {
     const [videoFile, setVideoFile] = useState(null);
     const [videoFilePerc, setVideoFilePerc] = useState(0);
     const [inputs, setInputs] = useState("");
-    const [tags, setTags] = useState([]);
+    const navigate = useNavigate();
 
     const inputRef = useRef()
 
@@ -86,7 +91,7 @@ const Upload = ({setOpen}) => {
             'state_changed',
             (snapshot) => {
             const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-            console.log('Upload is ' + progress + '% done');
+                setVideoFilePerc(Math.round(progress));
                 switch (snapshot.state) {
                 case 'paused':
                     console.log('Upload is paused');
@@ -104,27 +109,47 @@ const Upload = ({setOpen}) => {
             () => {
                 getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
                     setInputs(prev => {
-                        return {...prev, url: downloadURL}
-                        
+                        return {...prev, videoUrl: downloadURL}                        
                     })
                 }
             )}
         )
     }
 
+    useEffect(() => {
+      videoFile && uploadFile(videoFile);
+      console.log(inputs);
+    
+    }, [videoFile])
+    
+
+    const handleUpload = async (e) => {
+        e.preventDefault();
+        const res = await axios.post("https://video-share-app.onrender.com/api/videos/", {...inputs, imgUrl: "live"}, {withCredentials: true})
+        setOpen(false)
+        res.status === 200 && navigate(`/video/${res.data._id}`)        
+    };
+
     const handleDragOver = (e) => {
         e.preventDefault();
-        
     };
+    
     const handleDrop = (e) => {
         e.preventDefault();
-        setVideoFile(e.dataTransfer.files);
+        setVideoFile(e.dataTransfer.files[0]);
+        console.log(e.dataTransfer.files[0].name)
     };
 
     const handleChange = (e) => {
 
         setInputs(prev => {
             return {...prev, [e.target.name]: e.target.value}
+            
+        })
+    }
+    const handleTags = (e) => {
+        setInputs(prev => {
+            return {...prev, [e.target.name]: e.target.value.split(",")}
             
         })
     }
@@ -148,12 +173,14 @@ const Upload = ({setOpen}) => {
                 <SelectFileBtn onClick={() => inputRef.current.click()}>Select file</SelectFileBtn>
             </DragAndDropZone>
             ):
-            <DragAndDropZone>
-                <DropTitle></DropTitle>
+            (<DragAndDropZone>
+                <DropTitle>{videoFilePerc === 100 ? "Uploaded:" : "Uploading:" }{videoFilePerc} %</DropTitle>
+                <Label>{videoFile.name}</Label>
                 <DropInput name='title' type='text' placeholder='Title' onChange={handleChange}></DropInput>
                 <DropInput name='desc' rows={8} placeholder='Description' onChange={handleChange}></DropInput>
-                <DropInput name='tags' type='text' placeholder='Separate the tags with commas' onChange={handleChange}></DropInput>
-            </DragAndDropZone>
+                <DropInput name='tags' type='text' placeholder='Separate the tags with commas' onChange={handleTags}></DropInput>
+                <SelectFileBtn onClick={handleUpload}>Save video</SelectFileBtn>
+            </DragAndDropZone>)
             }
         </Wrapper>
     </Container>
